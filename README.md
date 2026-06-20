@@ -1,9 +1,14 @@
 # JLC EDA MCP Server
 
-这是从原 `jlc_import` 目录整理出来的独立仓库，用来让支持 Model Context Protocol 的客户端控制嘉立创 EDA。当前仓库路径是：
+这是从原 `jlc_import` 目录整理出来的独立仓库，用来让支持 Model Context Protocol 的客户端控制嘉立创 EDA。
+
+## Credits
+
+当前仓库基于 [hyl64/jlcmcp](https://github.com/hyl64/jlcmcp) 整理和改造。
 
 ```bash
-/Users/al/tmp/jlc-mcp
+git clone <this-repo-url> jlc-mcp
+cd jlc-mcp
 ```
 
 仓库包含三个部分：
@@ -17,9 +22,9 @@
 ```text
 MCP client
   -> stdio
-MCP server: /Users/al/tmp/jlc-mcp/dist/index.js
+MCP server: <absolute-path-to-jlc-mcp>/dist/index.js
   -> HTTP POST http://127.0.0.1:18800/command
-local gateway: /Users/al/tmp/jlc-mcp/local_jlc_gateway.cjs
+local gateway: local_jlc_gateway.cjs
   -> WebSocket ws://127.0.0.1:18800/ws/bridge
 jlc-bridge extension
   -> 嘉立创 EDA
@@ -37,7 +42,7 @@ MCP server 本身不直接控制 EDA，它只把工具调用发送给本机 gate
 ## 安装
 
 ```bash
-cd /Users/al/tmp/jlc-mcp
+cd /path/to/jlc-mcp
 npm install
 npm run build
 ```
@@ -45,13 +50,13 @@ npm run build
 构建成功后，MCP 入口文件是：
 
 ```bash
-/Users/al/tmp/jlc-mcp/dist/index.js
+/path/to/jlc-mcp/dist/index.js
 ```
 
 ## 构建并安装 EDA 插件
 
 ```bash
-cd /Users/al/tmp/jlc-mcp/jlc-bridge
+cd /path/to/jlc-mcp/jlc-bridge
 npm install
 npm run build
 ```
@@ -59,8 +64,8 @@ npm run build
 构建后会生成：
 
 ```text
-/Users/al/tmp/jlc-mcp/jlc-bridge/build/jlc-bridge.eext
-/Users/al/tmp/jlc-mcp/jlc-bridge/build/jlc-bridge.lcex
+/path/to/jlc-mcp/jlc-bridge/build/jlc-bridge.eext
+/path/to/jlc-mcp/jlc-bridge/build/jlc-bridge.lcex
 ```
 
 在嘉立创 EDA 里安装其中一个扩展包。插件会在 EDA 启动后自动尝试连接：
@@ -71,12 +76,14 @@ ws://127.0.0.1:18800/ws/bridge
 
 也可以在 EDA 的 `JLC Bridge` 菜单里查看状态或手动切换。
 
+WebSocket 是默认通信方式。插件还保留文件轮询 fallback，默认目录名是 `jlc-bridge`；如果确实要使用文件轮询，可以在 EDA 开发者控制台里设置 `localStorage.jlcBridgeDir` 为本机可写目录后重启插件。
+
 ## 启动 gateway
 
 在一个单独终端中运行：
 
 ```bash
-cd /Users/al/tmp/jlc-mcp
+cd /path/to/jlc-mcp
 npm run gateway
 ```
 
@@ -111,7 +118,7 @@ curl http://127.0.0.1:18800/state
     "jlceda": {
       "command": "node",
       "args": [
-        "/Users/al/tmp/jlc-mcp/dist/index.js"
+        "/absolute/path/to/jlc-mcp/dist/index.js"
       ],
       "env": {
         "GATEWAY_HTTP_URL": "http://127.0.0.1:18800/command"
@@ -165,7 +172,7 @@ curl http://127.0.0.1:18800/state
 只验证 MCP server 能启动并列出工具，不需要 gateway：
 
 ```bash
-cd /Users/al/tmp/jlc-mcp
+cd /path/to/jlc-mcp
 npm run build
 printf '%s\n' \
   '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"manual","version":"1.0.0"}}}' \
@@ -224,11 +231,11 @@ curl http://127.0.0.1:18800/state
 先确认已经构建：
 
 ```bash
-cd /Users/al/tmp/jlc-mcp
+cd /path/to/jlc-mcp
 npm run build
 ```
 
-再确认 MCP 配置里的路径是 `/Users/al/tmp/jlc-mcp/dist/index.js`，不是旧的 `jlc_import` 或 `/tmp/jlcmcp` 路径。
+再确认 MCP 配置里的路径是当前仓库的 `dist/index.js` 绝对路径，不是旧的 `jlc_import` 或 `/tmp/jlcmcp` 路径。
 
 ### 端口被占用
 

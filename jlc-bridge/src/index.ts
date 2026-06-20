@@ -2,7 +2,8 @@ import * as extensionConfig from '../extension.json';
 
 const APP_NAME = String((extensionConfig as any).displayName || 'JLC Bridge');
 const APP_VERSION = String((extensionConfig as any).version || '0.0.0');
-const BRIDGE_DIR = '/Users/al/.openclaw/workspace/jlc-bridge';
+const BRIDGE_DIR_STORAGE_KEY = 'jlcBridgeDir';
+const BRIDGE_DIR = readBridgeDir();
 const COMMAND_FILE = `${BRIDGE_DIR}/command.json`;
 const RESULT_FILE = `${BRIDGE_DIR}/result.json`;
 const LOG_FILE = `${BRIDGE_DIR}/bridge.log`;
@@ -41,6 +42,17 @@ type BridgeResult = {
 
 function anyEda(): any {
   return eda as any;
+}
+
+function readBridgeDir(): string {
+  try {
+    const value = (globalThis as any).localStorage?.getItem?.(BRIDGE_DIR_STORAGE_KEY);
+    const dir = typeof value === 'string' ? value.trim().replace(/[\\/]+$/, '') : '';
+    if (dir) return dir;
+  } catch {
+    // Use the built-in default when localStorage is unavailable.
+  }
+  return 'jlc-bridge';
 }
 
 function hasLegacyFileApi(): boolean {
@@ -3994,7 +4006,7 @@ async function takeScreenshot(): Promise<any> {
     }
   }
 
-  throw new Error(`screenshot unavailable, save manually to ${BRIDGE_DIR}\\screenshot.png`);
+  throw new Error(`screenshot unavailable, save manually to ${BRIDGE_DIR}/screenshot.png`);
 }
 
 async function executeCommand(cmd: BridgeCommand): Promise<BridgeResult> {
