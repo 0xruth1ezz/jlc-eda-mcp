@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "jlceda": {
+      "command": "node",
+      "args": [
+        "/Users/al/tmp/jlc-mcp/dist/index.js"
+      ],
+      "env": {
+        "GATEWAY_HTTP_URL": "http://127.0.0.1:18800/command"
+      }
+    }
+  }
+}
