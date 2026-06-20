@@ -10,3 +10,4 @@ jlc-bridge/build/package/
 jlc-bridge/build/*.eext
 jlc-bridge/build/*.lcex
 jlc-bridge/node_modules/
+.codex/
